@@ -67,7 +67,7 @@ public class DOBase {
 			loadAnnotationMapping(c);
 		}
 
-		return mappedClassColumnToFiled.get(c);
+		return mappedClassColumnToFiled.get(className);
 	}
 
 	private Map<String, String> getMappedFields() {
@@ -77,7 +77,7 @@ public class DOBase {
 			loadAnnotationMapping(c);
 		}
 
-		return mappedClassFieldToColumn.get(c);
+		return mappedClassFieldToColumn.get(className);
 	}
 
 	private void loadAnnotationMapping(Class c) {
