@@ -14,6 +14,7 @@ public class DOBase {
 	public long _id = -1;
 	private static Map<String, Map<String, String>> mappedClassColumnToFiled = new HashMap<>();
 	private static Map<String, Map<String, String>> mappedClassFieldToColumn = new HashMap<>();
+	private static Map<String, String> mappedTableNames = new HashMap<>();
 
 	protected DOBase() {
 	}
@@ -152,10 +153,18 @@ public class DOBase {
 	}
 
 	public static String getTableName(Class cl) {
-		if(cl.isAnnotationPresent(MapTable.class))
-			return ((MapTable)cl.getAnnotation(MapTable.class)).value();
-		else
-			return cl.getSimpleName().toLowerCase();
+		if(!mappedTableNames.containsKey(cl.getName())){
+			String name = null;
+			if(cl.isAnnotationPresent(MapTable.class))
+				name = ((MapTable)cl.getAnnotation(MapTable.class)).value();
+			else
+				name = cl.getSimpleName().toLowerCase();
+
+			mappedTableNames.put(cl.getName(), name);
+		}
+
+		return mappedTableNames.get(cl.getName());
+
 	}
 
 	private String getTableName() {
