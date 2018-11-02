@@ -12,18 +12,16 @@ import java.util.Map;
 
 public class DOBase {
 	public long _id = -1;
+	private static Map<String, Map<String, String>> mappedClassColumnToFiled = new HashMap<>();
+	private static Map<String, Map<String, String>> mappedClassFieldToColumn = new HashMap<>();
 
 	protected DOBase() {
 	}
 
 	protected DOBase(ISQLiteCursor cursor) {
-		Map<String, String> mapppedColumns = new HashMap<>();
-		Class c = this.getClass();
-		for(Field f : c.getFields()){
-			if(f.isAnnotationPresent(MapColumn.class))
-				mapppedColumns.put(f.getAnnotation(MapColumn.class).value(), f.getName());
-		}
 
+		Map<String, String> mapppedColumns = getMappedColumns();
+		Class c = this.getClass();
 
 		String[] columns = cursor.getColumnNames();
 		String tableName = getTableName();
@@ -60,6 +58,40 @@ public class DOBase {
 				//FirebaseCrash.report(e);
 			}
 		}
+	}
+
+	private Map<String, String> getMappedColumns() {
+		Class c = this.getClass();
+		String className = c.getName();
+		if(!mappedClassColumnToFiled.containsKey(className)) {
+			loadAnnotationMapping(c);
+		}
+
+		return mappedClassColumnToFiled.get(c);
+	}
+
+	private Map<String, String> getMappedFields() {
+		Class c = this.getClass();
+		String className = c.getName();
+		if(!mappedClassFieldToColumn.containsKey(className)) {
+			loadAnnotationMapping(c);
+		}
+
+		return mappedClassFieldToColumn.get(c);
+	}
+
+	private void loadAnnotationMapping(Class c) {
+		Map<String, String> mapppedColumns = new HashMap<>();
+		Map<String, String> mapppedFields = new HashMap<>();
+		for (Field f : c.getFields()) {
+			if (f.isAnnotationPresent(MapColumn.class)) {
+				mapppedColumns.put(f.getAnnotation(MapColumn.class).value(), f.getName());
+				mapppedFields.put(f.getName(), f.getAnnotation(MapColumn.class).value());
+			}
+		}
+		mappedClassColumnToFiled.put(c.getName(), mapppedColumns);
+		mappedClassFieldToColumn.put(c.getName(), mapppedFields);
+
 	}
 
 	//public static <T> T SelectById(T t, Long id) {
@@ -135,6 +167,7 @@ public class DOBase {
 	public Long save(ISQLiteDatabase db, boolean closeConnection) {
 		Class c = this.getClass();
 		String tableName = getTableName();
+		Map<String, String> mapppedFields = getMappedFields();
 
 		ISQLiteContentValues newValues = db.newContentValues();
 
@@ -155,8 +188,8 @@ public class DOBase {
 						valueToSet = f.get(this) == null ? null: f.get(this).toString();
 
 					String columnName;
-					if(f.isAnnotationPresent(MapColumn.class))
-						columnName = f.getAnnotation(MapColumn.class).value();
+					if(mapppedFields.containsValue(f.getName()))
+						columnName = mapppedFields.get(f.getName());
 					else
 						columnName = f.getName().toLowerCase() + "_" + tableName;
 
