@@ -49,21 +49,20 @@ public abstract class ISQLiteDatabase {
 	public abstract ISQLiteCursor rawQuery(String sql, String[] selectionArgs);
 
 	private boolean isInTransatcion = false;
-	void beginTransaction(){
-		this.execSQL("BEGIN TRANSACTION;");
-		isInTransatcion = true;
-	}
-	void commitTransacton(){
-		this.execSQL("COMMIT TRANSACTION;");
-		isInTransatcion = false;
-	}
-	void rollbackTransacton(){
-		this.execSQL("ROLLBACK TRANSACTION;");
-		isInTransatcion = false;
-	}
-
 	/*
 		Be carefull! If transaction was added in differet way, this methods will lead to unexpeced results.
 	 */
-	boolean isInTransaction(){return isInTransatcion;}
+	public boolean isInTransaction(){return isInTransatcion;}
+	public void beginTransaction(){
+		this.execSQL("BEGIN TRANSACTION;");
+		isInTransatcion = true;
+	}
+	public void commitTransacton(){
+		this.execSQL("COMMIT TRANSACTION;");
+		isInTransatcion = false;
+	}
+	public void rollbackTransacton(){
+		this.execSQL("ROLLBACK TRANSACTION;");
+		isInTransatcion = false;
+	}
 }
