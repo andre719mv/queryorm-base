@@ -31,24 +31,24 @@ package com.stayfit.queryorm.lib.sqlinterfaces;
 
 public abstract class ISQLiteDatabase {
 
-	ISQLiteContentValues newContentValues();
+	public abstract ISQLiteContentValues newContentValues();
 
-	ISQLiteCursor query(String table, String[] columns, String selection,
+	public abstract ISQLiteCursor query(String table, String[] columns, String selection,
                         String[] selectionArgs, String groupBy, String having,
                         String orderBy);
 
-	int delete(String table, String whereClause, String[] whereArgs);
+	public abstract int delete(String table, String whereClause, String[] whereArgs);
 
-	long insert(String table, String nullColumnHack, ISQLiteContentValues values);
+	public abstract long insert(String table, String nullColumnHack, ISQLiteContentValues values);
 
-	void execSQL(String statement);
+	public abstract void execSQL(String statement);
 
-	void update(String tableName, ISQLiteContentValues values,
+	public abstract void update(String tableName, ISQLiteContentValues values,
                 String whereClause, String[] whereArgs);
 
-	ISQLiteCursor rawQuery(String sql, String[] selectionArgs);
+	public abstract ISQLiteCursor rawQuery(String sql, String[] selectionArgs);
 
-	private bool isInTransatcion = false;
+	private boolean isInTransatcion = false;
 	void beginTransaction(){
 		this.execSQL("BEGIN TRANSACTION;");
 		isInTransatcion = true;
