@@ -29,6 +29,8 @@
 
 package com.stayfit.queryorm.lib.sqlinterfaces;
 
+import java.sql.SQLException;
+
 public abstract class ISQLiteDatabase {
 
 	public abstract ISQLiteContentValues newContentValues();
@@ -53,15 +55,24 @@ public abstract class ISQLiteDatabase {
 		Be carefull! If transaction was added in differet way, this methods will lead to unexpeced results.
 	 */
 	public boolean isInTransaction(){return isInTransatcion;}
-	public void beginTransaction(){
+	public void beginTransaction() throws Exception {
+		if(isInTransatcion)
+			throw new Exception("Already in transaction");
+
 		this.execSQL("BEGIN TRANSACTION;");
 		isInTransatcion = true;
 	}
-	public void commitTransaction(){
+	public void commitTransaction() throws Exception {
+		if(!isInTransatcion)
+			throw new Exception("There is no active transaction");
+
 		this.execSQL("COMMIT TRANSACTION;");
 		isInTransatcion = false;
 	}
-	public void rollbackTransaction(){
+	public void rollbackTransaction() throws Exception {
+		if(!isInTransatcion)
+			throw new Exception("There is no active transaction");
+
 		this.execSQL("ROLLBACK TRANSACTION;");
 		isInTransatcion = false;
 	}
