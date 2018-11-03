@@ -57,11 +57,11 @@ public abstract class ISQLiteDatabase {
 		this.execSQL("BEGIN TRANSACTION;");
 		isInTransatcion = true;
 	}
-	public void commitTransacton(){
+	public void commitTransaction(){
 		this.execSQL("COMMIT TRANSACTION;");
 		isInTransatcion = false;
 	}
-	public void rollbackTransacton(){
+	public void rollbackTransaction(){
 		this.execSQL("ROLLBACK TRANSACTION;");
 		isInTransatcion = false;
 	}
