@@ -29,7 +29,7 @@
 
 package com.stayfit.queryorm.lib.sqlinterfaces;
 
-public interface ISQLiteDatabase {
+public abstract class ISQLiteDatabase {
 
 	ISQLiteContentValues newContentValues();
 
@@ -48,4 +48,22 @@ public interface ISQLiteDatabase {
 
 	ISQLiteCursor rawQuery(String sql, String[] selectionArgs);
 
+	private bool isInTransatcion = false;
+	void beginTransaction(){
+		this.execSQL("BEGIN TRANSACTION;");
+		isInTransatcion = true;
+	}
+	void commitTransacton(){
+		this.execSQL("COMMIT TRANSACTION;");
+		isInTransatcion = false;
+	}
+	void rollbackTransacton(){
+		this.execSQL("ROLLBACK TRANSACTION;");
+		isInTransatcion = false;
+	}
+
+	/*
+		Be carefull! If transaction was added in differet way, this methods will lead to unexpeced results.
+	 */
+	boolean isInTransaction(){return isInTransatcion;}
 }
