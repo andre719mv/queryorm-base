@@ -86,8 +86,9 @@ public class DOBase {
 		Map<String, String> mapppedFields = new HashMap<>();
 		for (Field f : c.getFields()) {
 			if (f.isAnnotationPresent(MapColumn.class)) {
-				mapppedColumns.put(f.getAnnotation(MapColumn.class).value(), f.getName());
-				mapppedFields.put(f.getName(), f.getAnnotation(MapColumn.class).value());
+				String columnName = f.getAnnotation(MapColumn.class).value();
+				mapppedColumns.put(columnName, f.getName());
+				mapppedFields.put(f.getName(), columnName);
 			}
 		}
 		mappedClassColumnToFiled.put(c.getName(), mapppedColumns);
@@ -197,7 +198,7 @@ public class DOBase {
 						valueToSet = f.get(this) == null ? null: f.get(this).toString();
 
 					String columnName;
-					if(mapppedFields.containsValue(f.getName()))
+					if(mapppedFields.containsKey(f.getName()))
 						columnName = mapppedFields.get(f.getName());
 					else
 						columnName = f.getName().toLowerCase() + "_" + tableName;
