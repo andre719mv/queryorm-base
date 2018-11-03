@@ -52,26 +52,29 @@ public abstract class ISQLiteDatabase {
 
 	private boolean isInTransatcion = false;
 	/*
-		Be carefull! If transaction was added in differet way, this methods will lead to unexpeced results.
+		Be careful! If transaction was added in differet way, this methods will lead to unexpeced results.
 	 */
 	public boolean isInTransaction(){return isInTransatcion;}
-	public void beginTransaction() throws Exception {
+
+	public void beginTransaction() {
 		if(isInTransatcion)
-			throw new Exception("Already in transaction");
+			throw new RuntimeException("Already in transaction");
 
 		this.execSQL("BEGIN TRANSACTION;");
 		isInTransatcion = true;
 	}
-	public void commitTransaction() throws Exception {
+
+	public void commitTransaction() {
 		if(!isInTransatcion)
-			throw new Exception("There is no active transaction");
+			throw new RuntimeException("There is no active transaction");
 
 		this.execSQL("COMMIT TRANSACTION;");
 		isInTransatcion = false;
 	}
-	public void rollbackTransaction() throws Exception {
+
+	public void rollbackTransaction() {
 		if(!isInTransatcion)
-			throw new Exception("There is no active transaction");
+			throw new RuntimeException("There is no active transaction");
 
 		this.execSQL("ROLLBACK TRANSACTION;");
 		isInTransatcion = false;
