@@ -5,7 +5,7 @@ package com.stayfit.queryorm.lib;
  */
 
 public class SmartSqlQuery{
-    SmartSqlQuery(String sql, String[] args){
+    public SmartSqlQuery(String sql, String[] args){
         mSql = sql;
         mArgs = args;
     }
