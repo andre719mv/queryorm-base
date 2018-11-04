@@ -23,6 +23,11 @@ public class SqlExecutor {
 		ISQLiteCursor cursor = db.rawQuery(sql, null);
 		return new QueryResult(cursor, cl);
 	}
+
+	public <T> QueryResult executeSelect(Class<T> cl, SmartSqlQuery query){
+		ISQLiteCursor cursor = db.rawQuery(query.getSql(), query.getArgs());
+		return new QueryResult(cursor, cl);
+	}
 	
 	public ISQLiteCursor rawQuery(String sql){
 		return db.rawQuery(sql, null);
