@@ -54,7 +54,7 @@ public class DOBase {
 					if (!cursor.isNull(cursor.getColumnIndex(column)))
 						f.set(this, cursor.getDouble(cursor.getColumnIndex(column)));
 				}else{
-					throw new RuntimeException("Unexpecterd field type " + fieldType + " mapped to " + tableName + "." + column)
+					throw new RuntimeException("Unexpected field type " + fieldType + " mapped to " + tableName + "." + column);
 				}
 			} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
 				e.printStackTrace();
