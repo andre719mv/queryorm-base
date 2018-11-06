@@ -48,11 +48,13 @@ public class DOBase {
 					f.setLong(this,	cursor.getLong(cursor.getColumnIndex(column)));
 				} else if (fieldType.equals("java.util.Date")) {
 					f.set(this,	new TypeConverter().readDate(cursor.getString(cursor.getColumnIndex(column))));
-				}else if (fieldType.equals("double")) {
+				}else if (fieldType.equals("double") || fieldType.equals("float")) {
 					f.set(this,	cursor.getDouble(cursor.getColumnIndex(column)));
-				}else if (fieldType.equals("java.lang.Double")) {
-					if(!cursor.isNull(cursor.getColumnIndex(column)))
-						f.set(this,	cursor.getDouble(cursor.getColumnIndex(column)));
+				}else if (fieldType.equals("java.lang.Double") || fieldType.equals("java.lang.Float")) {
+					if (!cursor.isNull(cursor.getColumnIndex(column)))
+						f.set(this, cursor.getDouble(cursor.getColumnIndex(column)));
+				}else{
+					throw new RuntimeException("Unexpecterd field type " + fieldType + " mapped to " + tableName + "." + column)
 				}
 			} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
 				e.printStackTrace();
