@@ -78,7 +78,7 @@ class QueryBuilder {
 					expr.append(" AND ");
 				counter++;
 
-				if(param instanceof IMemberCriteria) {
+				if(param instanceof BinaryWhereParam) {
 					BinaryWhereParam cRapam = ((BinaryWhereParam) param);
 					switch (cRapam.Operator) {
 						case IsEqualTo:
