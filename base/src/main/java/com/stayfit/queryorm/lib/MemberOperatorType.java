@@ -3,7 +3,7 @@ package com.stayfit.queryorm.lib;
 /// <summary>
 /// Операторы поисковых критериев.
 /// </summary>
-public enum MemberOperatorType {
+public enum MemberOperatorType implements BaseMemberOperatorType {
 	/// <summary>
     /// Равно
     /// </summary>
@@ -48,9 +48,6 @@ public enum MemberOperatorType {
     /// 
     /// </summary>
     Contains,
-
-    IsNull,
-    IsNotNull,
     BitwiseOneOf,//row containt one of passed bit values
     BitwiseAll //row contains all passed bit values and possibly some others
 }

@@ -9,10 +9,8 @@ import java.util.List;
 
 public class QueryParms {
 
-	private List<CriteriaParam> _selectCriterias = new ArrayList<CriteriaParam>();
+	private List<IWhereParam> _whereParams = new ArrayList<IWhereParam>();
 	private List<OrderParam> _orderParams = new ArrayList<OrderParam>();
-	private List<InParam> _inParams = new ArrayList<InParam>();
-	private List<InParam> _notInParams = new ArrayList<InParam>();
 	private List<String> _groupByParams = new ArrayList<String>();
 	private Class _entityType;
 
@@ -46,50 +44,27 @@ public class QueryParms {
 		return _groupByParams;
 	}
 
-	// Properties
-	// / <summary>
-	// / Параметры in(...).
-	// / </summary>
-	public List<InParam> getInParams() {
-		return _inParams;
-	}
 
-	public List<InParam> getNotInParams() {
-		return _notInParams;
-	}
 
 
 	// / <summary>
 	// / Список поисковых критериев.
 	// / </summary>
-	public List<CriteriaParam> getSelectCriterias() {
+	public List<IWhereParam> getSelectCriterias() {
 		if(hasIsDeletedColumn()){
 			boolean canAddCriteria = true;
-			for (CriteriaParam criteria: _selectCriterias) {
+			for (IWhereParam criteria: _whereParams) {
 				if(criteria.PropertyName.equals(CommonFields.IsDeleted)) {
 					canAddCriteria = false;
 					break;
 				}
 			}
 
-			for (InParam inParam: _inParams) {
-				if(CommonFields.IsDeleted.equals(inParam.PropertyName)) {
-					canAddCriteria = false;
-					break;
-				}
-			}
-
-			for (InParam inParam: _notInParams) {
-				if(CommonFields.IsDeleted.equals(inParam.PropertyName)) {
-					canAddCriteria = false;
-					break;
-				}
-			}
 			if(canAddCriteria)
 				addCriteria(CommonFields.IsDeleted, 0);
 		}
 
-		return _selectCriterias;
+		return _whereParams;
 	}
 
 	private boolean hasIsDeletedColumn() {
@@ -131,16 +106,20 @@ public class QueryParms {
 	 */
 
 	// [Obsolete("Use generic method.", false)]
-	public QueryParms addCriteria(String member, Object value,
-								  MemberOperatorType operatorType) {
+	public QueryParms addCriteria(String member, Object value, MemberOperatorType operatorType) {
 		if (operatorType == null)
 			operatorType = MemberOperatorType.IsEqualTo;
+
 		if (StrUtils.isEmpty(member)) {
 			throw new InvalidParameterException(
 					"Argument 'member' is null or empty.");
 		}
 
-		CriteriaParam criteriaParam = new CriteriaParam();
+		if (value == null) {
+			throw new InvalidParameterException("Argument 'value' is null.");
+		}
+
+		BinaryWhereParam criteriaParam = new BinaryWhereParam();
 		criteriaParam.PropertyName = member;
 		criteriaParam.Operator = operatorType;
 
@@ -155,7 +134,7 @@ public class QueryParms {
 
 		criteriaParam.CriteriaValue = strValue;
 
-		_selectCriterias.add(criteriaParam);
+		_whereParams.add(criteriaParam);
 
 		return this;
 	}
@@ -166,12 +145,21 @@ public class QueryParms {
 					"Argument 'member' is null or empty.");
 		}
 
-		CriteriaParam criteriaParam = new CriteriaParam();
-		criteriaParam.PropertyName = member;
-		criteriaParam.Operator = MemberOperatorType.IsEqualTo;
-		criteriaParam.CriteriaValue = value;
+		IWhereParam param;
+		if(value == null) {
+			UnaryWhereParam criteriaParam = new UnaryWhereParam();
+			criteriaParam.PropertyName = member;
+			criteriaParam.Operator = UnaryMemberOperatorType.IsNull;
+			param = criteriaParam;
+		}else {
+			BinaryWhereParam criteriaParam = new BinaryWhereParam();
+			criteriaParam.PropertyName = member;
+			criteriaParam.Operator = MemberOperatorType.IsEqualTo;
+			criteriaParam.CriteriaValue = value;
+			param = criteriaParam;
+		}
 
-		_selectCriterias.add(criteriaParam);
+		_whereParams.add(param);
 
 		return this;
 	}
@@ -186,34 +174,61 @@ public class QueryParms {
 		return addCriteria(member, value? "1": "0");
 	}
 
-	public QueryParms in(String member, List<String> values) {
+	public QueryParms addCriteria(String member, UnaryMemberOperatorType operatorType) {
 		if (StrUtils.isEmpty(member)) {
 			throw new InvalidParameterException(
 					"Argument 'member' is null or empty.");
 		}
 
-		InParam criteriaParam = new InParam();
-		criteriaParam.PropertyName = member;
-		criteriaParam.Values = values;
+		if (operatorType == null) {
+			throw new InvalidParameterException(
+					"Argument 'operatorType' is null.");
+		}
 
-		_inParams.add(criteriaParam);
+		UnaryWhereParam criteriaParam = new UnaryWhereParam();
+		criteriaParam.PropertyName = member;
+		criteriaParam.Operator = operatorType;
+
+		_whereParams.add(criteriaParam);
 
 		return this;
 	}
 
-	public QueryParms notIn(String member, List<String> values) {
+	public QueryParms addCriteria(String member, List<String> values, CollectionMemberOperatorType operatorType) {
 		if (StrUtils.isEmpty(member)) {
 			throw new InvalidParameterException(
 					"Argument 'member' is null or empty.");
 		}
 
-		InParam criteriaParam = new InParam();
+		if (operatorType == null) {
+			throw new InvalidParameterException(
+					"Argument 'operatorType' is null.");
+		}
+
+		CollectionWhereParam criteriaParam = new CollectionWhereParam();
 		criteriaParam.PropertyName = member;
+		criteriaParam.Operator = operatorType;
 		criteriaParam.Values = values;
 
-		_notInParams.add(criteriaParam);
+		_whereParams.add(criteriaParam);
 
 		return this;
+	}
+
+	public QueryParms isNull(String member) {
+		return addCriteria(member, UnaryMemberOperatorType.IsNull);
+	}
+
+	public QueryParms isNotNull(String member) {
+		return addCriteria(member, UnaryMemberOperatorType.IsNotNull);
+	}
+
+	public QueryParms in(String member, List<String> values) {
+		return addCriteria(member, values, CollectionMemberOperatorType.In);
+	}
+
+	public QueryParms notIn(String member, List<String> values) {
+		return addCriteria(member, values, CollectionMemberOperatorType.NotIn);
 	}
 
 
@@ -264,9 +279,9 @@ public class QueryParms {
 		StringBuilder sb = new StringBuilder().append("QueryParms:");
 		sb.append(String.format("TypeName: %s", TypeName));
 
-		if (!_selectCriterias.isEmpty()) {
+		if (!_whereParams.isEmpty()) {
 			sb.append("SelectCriterias:");
-			for (CriteriaParam c : _selectCriterias) {
+			for (IWhereParam c : _whereParams) {
 				sb.append(c.toString());
 			}
 		} else {
@@ -280,24 +295,6 @@ public class QueryParms {
 			}
 		} else {
 			sb.append(". SelectCriterias: empty");
-		}
-
-		if (!_inParams.isEmpty()) {
-			sb.append(". InParams:");
-			for (InParam p : _inParams) {
-				sb.append(p.toString());
-			}
-		} else {
-			sb.append(". InParams: empty");
-		}
-
-		if (!_notInParams.isEmpty()) {
-			sb.append(". NotInParams:");
-			for (InParam p : _notInParams) {
-				sb.append(p.toString());
-			}
-		} else {
-			sb.append(". NotInParams: empty");
 		}
 
 		if (!_groupByParams.isEmpty()) {

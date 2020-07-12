@@ -66,66 +66,98 @@ class QueryBuilder {
 
 	private static String createWhere(QueryParms queryParms, List<String> args) {
 		StringBuilder expr = new StringBuilder();
-		List<CriteriaParam> criterias = queryParms.getSelectCriterias();
-		List<InParam> inParams = queryParms.getInParams();
-		List<InParam> notInParams = queryParms.getNotInParams();
-		if (!(criterias.isEmpty() && inParams.isEmpty())) {
+		List<IWhereParam> criterias = queryParms.getSelectCriterias();
+		//List<InParam> inParams = queryParms.getInParams();
+		//List<InParam> notInParams = queryParms.getNotInParams();
+		if (!(criterias.isEmpty() )) { //&& inParams.isEmpty()
 			expr.append("WHERE ");
 			
 			int counter = 0;
-			for (CriteriaParam param : criterias) {
+			for (IWhereParam param : criterias) {
 				if (counter != 0)
 					expr.append(" AND ");
 				counter++;
-				switch (param.Operator) {
-				case IsEqualTo:
-					expr.append(param.PropertyName + " = ? ");
-					args.add(param.CriteriaValue);
-					break;
-				case IsNotEqualTo:
-					expr.append(param.PropertyName + " <> ? ");
-					args.add(param.CriteriaValue);
-					break;
-				case IsLessThan:
-					expr.append(param.PropertyName + " < ? ");
-					args.add(param.CriteriaValue);
-					break;
-				case IsLessThanOrEqualTo:
-					expr.append(param.PropertyName + " <= ? ");
-					args.add(param.CriteriaValue);
-					break;
-				case IsGreaterThanOrEqualTo:
-					expr.append(param.PropertyName + " >= ? ");
-					args.add(param.CriteriaValue);
-					break;
-				case IsGreaterThan:
-					expr.append(param.PropertyName + " > ? ");
-					args.add(param.CriteriaValue);
-					break;
-				case StartsWith:
-					throw new UnsupportedOperationException();
-				case EndsWith:
-					throw new UnsupportedOperationException();
-				case Contains:
-					throw new UnsupportedOperationException();
-				case BitwiseOneOf:
-					expr.append(param.PropertyName + " & ? <> 0 ");
-					args.add(param.CriteriaValue);
-					break;
-				case BitwiseAll:
-					throw new UnsupportedOperationException();
-					//break;
-				case IsNull:
-					expr.append(param.PropertyName + " IS NULL ");
-					break;
-				case IsNotNull:
-					expr.append(param.PropertyName + " NOT NULL ");
-					break;
-				default:
-					throw new UnsupportedOperationException();
+
+				if(param instanceof IMemberCriteria) {
+					BinaryWhereParam cRapam = ((BinaryWhereParam) param);
+					switch (cRapam.Operator) {
+						case IsEqualTo:
+							expr.append(param.PropertyName + " = ? ");
+							args.add(cRapam.CriteriaValue);
+							break;
+						case IsNotEqualTo:
+							expr.append(param.PropertyName + " <> ? ");
+							args.add(cRapam.CriteriaValue);
+							break;
+						case IsLessThan:
+							expr.append(param.PropertyName + " < ? ");
+							args.add(cRapam.CriteriaValue);
+							break;
+						case IsLessThanOrEqualTo:
+							expr.append(param.PropertyName + " <= ? ");
+							args.add(cRapam.CriteriaValue);
+							break;
+						case IsGreaterThanOrEqualTo:
+							expr.append(param.PropertyName + " >= ? ");
+							args.add(cRapam.CriteriaValue);
+							break;
+						case IsGreaterThan:
+							expr.append(param.PropertyName + " > ? ");
+							args.add(cRapam.CriteriaValue);
+							break;
+						case StartsWith:
+							throw new UnsupportedOperationException();
+						case EndsWith:
+							throw new UnsupportedOperationException();
+						case Contains:
+							throw new UnsupportedOperationException();
+						case BitwiseOneOf:
+							expr.append(param.PropertyName + " & ? <> 0 ");
+							args.add(cRapam.CriteriaValue);
+							break;
+						case BitwiseAll:
+							throw new UnsupportedOperationException();
+							//break;
+						default:
+							throw new UnsupportedOperationException();
+					}
+				} else if (param instanceof UnaryWhereParam) {
+					UnaryWhereParam uParam = (UnaryWhereParam) param;
+					switch (uParam.Operator) {
+						case IsNull:
+							expr.append(param.PropertyName + " IS NULL ");
+							break;
+						case IsNotNull:
+							expr.append(param.PropertyName + " NOT NULL ");
+							break;
+						default:
+							throw new UnsupportedOperationException();
+					}
+				} else if (param instanceof CollectionWhereParam) {
+					CollectionWhereParam clParam = (CollectionWhereParam) param;
+					switch (clParam.Operator) {
+						case In:
+							expr.append(param.PropertyName + " in (");
+							break;
+						case NotIn:
+							expr.append(param.PropertyName + " NOT in (");
+							break;
+						default:
+							throw new UnsupportedOperationException();
+					}
+
+					for (int i = 0; i< clParam.Values.size(); i++) {
+						expr.append("?");
+						args.add( clParam.Values.get(i));
+
+						if(i< clParam.Values.size() - 1)
+							expr.append(", ");
+					}
+					expr.append(") ");
 				}
 			}
-			for (InParam param : inParams) {
+
+			/*for (InParam param : inParams) {
 				if (counter != 0)
 					expr.append(" AND ");
 				counter++;
@@ -155,7 +187,7 @@ class QueryBuilder {
 						expr.append(", ");
 				}
 				expr.append(") ");
-			}
+			}*/
 		}
 		return expr.toString();
 	}
