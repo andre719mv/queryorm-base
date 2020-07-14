@@ -2,7 +2,7 @@ package com.stayfit.queryorm.lib;
 
 import java.util.List;
 
-public class CollectionWhereParam implements IMemberCriteria, IWhereParam {
+public class CollectionWhereParam implements IWhereParam {
 	 public String PropertyName;
      public CollectionMemberOperatorType Operator;
      public List<String> Values;

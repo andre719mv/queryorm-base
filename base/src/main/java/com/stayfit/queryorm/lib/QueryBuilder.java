@@ -79,31 +79,31 @@ class QueryBuilder {
 				counter++;
 
 				if(param instanceof BinaryWhereParam) {
-					BinaryWhereParam cRapam = ((BinaryWhereParam) param);
-					switch (cRapam.Operator) {
+					BinaryWhereParam cParam = ((BinaryWhereParam) param);
+					switch (cParam.Operator) {
 						case IsEqualTo:
 							expr.append(param.PropertyName + " = ? ");
-							args.add(cRapam.CriteriaValue);
+							args.add(cParam.CriteriaValue);
 							break;
 						case IsNotEqualTo:
 							expr.append(param.PropertyName + " <> ? ");
-							args.add(cRapam.CriteriaValue);
+							args.add(cParam.CriteriaValue);
 							break;
 						case IsLessThan:
 							expr.append(param.PropertyName + " < ? ");
-							args.add(cRapam.CriteriaValue);
+							args.add(cParam.CriteriaValue);
 							break;
 						case IsLessThanOrEqualTo:
 							expr.append(param.PropertyName + " <= ? ");
-							args.add(cRapam.CriteriaValue);
+							args.add(cParam.CriteriaValue);
 							break;
 						case IsGreaterThanOrEqualTo:
 							expr.append(param.PropertyName + " >= ? ");
-							args.add(cRapam.CriteriaValue);
+							args.add(cParam.CriteriaValue);
 							break;
 						case IsGreaterThan:
 							expr.append(param.PropertyName + " > ? ");
-							args.add(cRapam.CriteriaValue);
+							args.add(cParam.CriteriaValue);
 							break;
 						case StartsWith:
 							throw new UnsupportedOperationException();
@@ -113,7 +113,7 @@ class QueryBuilder {
 							throw new UnsupportedOperationException();
 						case BitwiseOneOf:
 							expr.append(param.PropertyName + " & ? <> 0 ");
-							args.add(cRapam.CriteriaValue);
+							args.add(cParam.CriteriaValue);
 							break;
 						case BitwiseAll:
 							throw new UnsupportedOperationException();

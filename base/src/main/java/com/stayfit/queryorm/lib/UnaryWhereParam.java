@@ -1,6 +1,6 @@
 package com.stayfit.queryorm.lib;
 
-public class UnaryWhereParam implements IMemberCriteria, IWhereParam {
+public class UnaryWhereParam implements IWhereParam {
 	 public String PropertyName;
      public UnaryMemberOperatorType Operator;
 
