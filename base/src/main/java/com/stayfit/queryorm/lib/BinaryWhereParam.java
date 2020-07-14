@@ -1,6 +1,6 @@
 package com.stayfit.queryorm.lib;
 
-public class BinaryWhereParam implements IMemberCriteria {
+public class BinaryWhereParam implements IWhereParam {
 	 public String PropertyName;
      public String CriteriaValue;
      public MemberOperatorType Operator;
@@ -9,5 +9,10 @@ public class BinaryWhereParam implements IMemberCriteria {
      public String toString(){
          return
              String.format("%s %s %s", PropertyName, Operator, CriteriaValue);
+     }
+
+     @Override
+     public String getPropertyName() {
+          return PropertyName;
      }
 }

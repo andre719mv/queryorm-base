@@ -56,7 +56,7 @@ class QueryBuilder {
 				if (counter != 0)
 					expr.append(", ");
 				
-				expr.append(param.PropertyName)
+				expr.append(param.getPropertyName())
 						.append(param.IsDesc ? " DESC " : " ASC ");
 				counter++;
 			}
@@ -67,9 +67,7 @@ class QueryBuilder {
 	private static String createWhere(QueryParms queryParms, List<String> args) {
 		StringBuilder expr = new StringBuilder();
 		List<IWhereParam> criterias = queryParms.getSelectCriterias();
-		//List<InParam> inParams = queryParms.getInParams();
-		//List<InParam> notInParams = queryParms.getNotInParams();
-		if (!(criterias.isEmpty() )) { //&& inParams.isEmpty()
+		if (!(criterias.isEmpty() )) {
 			expr.append("WHERE ");
 			
 			int counter = 0;
@@ -82,27 +80,27 @@ class QueryBuilder {
 					BinaryWhereParam cParam = ((BinaryWhereParam) param);
 					switch (cParam.Operator) {
 						case IsEqualTo:
-							expr.append(param.PropertyName + " = ? ");
+							expr.append(param.getPropertyName() + " = ? ");
 							args.add(cParam.CriteriaValue);
 							break;
 						case IsNotEqualTo:
-							expr.append(param.PropertyName + " <> ? ");
+							expr.append(param.getPropertyName() + " <> ? ");
 							args.add(cParam.CriteriaValue);
 							break;
 						case IsLessThan:
-							expr.append(param.PropertyName + " < ? ");
+							expr.append(param.getPropertyName() + " < ? ");
 							args.add(cParam.CriteriaValue);
 							break;
 						case IsLessThanOrEqualTo:
-							expr.append(param.PropertyName + " <= ? ");
+							expr.append(param.getPropertyName() + " <= ? ");
 							args.add(cParam.CriteriaValue);
 							break;
 						case IsGreaterThanOrEqualTo:
-							expr.append(param.PropertyName + " >= ? ");
+							expr.append(param.getPropertyName() + " >= ? ");
 							args.add(cParam.CriteriaValue);
 							break;
 						case IsGreaterThan:
-							expr.append(param.PropertyName + " > ? ");
+							expr.append(param.getPropertyName() + " > ? ");
 							args.add(cParam.CriteriaValue);
 							break;
 						case StartsWith:
@@ -112,7 +110,7 @@ class QueryBuilder {
 						case Contains:
 							throw new UnsupportedOperationException();
 						case BitwiseOneOf:
-							expr.append(param.PropertyName + " & ? <> 0 ");
+							expr.append(param.getPropertyName() + " & ? <> 0 ");
 							args.add(cParam.CriteriaValue);
 							break;
 						case BitwiseAll:
@@ -125,10 +123,10 @@ class QueryBuilder {
 					UnaryWhereParam uParam = (UnaryWhereParam) param;
 					switch (uParam.Operator) {
 						case IsNull:
-							expr.append(param.PropertyName + " IS NULL ");
+							expr.append(param.getPropertyName() + " IS NULL ");
 							break;
 						case IsNotNull:
-							expr.append(param.PropertyName + " NOT NULL ");
+							expr.append(param.getPropertyName() + " NOT NULL ");
 							break;
 						default:
 							throw new UnsupportedOperationException();
@@ -137,10 +135,10 @@ class QueryBuilder {
 					CollectionWhereParam clParam = (CollectionWhereParam) param;
 					switch (clParam.Operator) {
 						case In:
-							expr.append(param.PropertyName + " in (");
+							expr.append(param.getPropertyName() + " in (");
 							break;
 						case NotIn:
-							expr.append(param.PropertyName + " NOT in (");
+							expr.append(param.getPropertyName() + " NOT in (");
 							break;
 						default:
 							throw new UnsupportedOperationException();
@@ -156,38 +154,6 @@ class QueryBuilder {
 					expr.append(") ");
 				}
 			}
-
-			/*for (InParam param : inParams) {
-				if (counter != 0)
-					expr.append(" AND ");
-				counter++;
-
-				expr.append(param.PropertyName + " in (");
-				for (int i = 0; i< param.Values.size(); i++) {
-					expr.append("?");
-					args.add( param.Values.get(i));
-
-					if(i< param.Values.size() - 1)
-						expr.append(", ");
-				}
-				expr.append(") ");
-			}
-
-			for (InParam param : notInParams) {
-				if (counter != 0)
-					expr.append(" AND ");
-				counter++;
-
-				expr.append(param.PropertyName + " NOT in (");
-				for (int i = 0; i< param.Values.size(); i++) {
-					expr.append("?");
-					args.add( param.Values.get(i));
-
-					if(i< param.Values.size() - 1)
-						expr.append(", ");
-				}
-				expr.append(") ");
-			}*/
 		}
 		return expr.toString();
 	}

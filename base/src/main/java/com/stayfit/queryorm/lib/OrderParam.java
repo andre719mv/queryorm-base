@@ -9,4 +9,9 @@ class OrderParam implements IMemberCriteria{
      {
          return String.format("%s, IsDesc: %s.", PropertyName, IsDesc);
      }
+
+     @Override
+     public String getPropertyName() {
+          return PropertyName;
+     }
 }

@@ -54,7 +54,7 @@ public class QueryParms {
 		if(hasIsDeletedColumn()){
 			boolean canAddCriteria = true;
 			for (IWhereParam criteria: _whereParams) {
-				if(criteria.PropertyName.equals(CommonFields.IsDeleted)) {
+				if(criteria.getPropertyName().equals(CommonFields.IsDeleted)) {
 					canAddCriteria = false;
 					break;
 				}

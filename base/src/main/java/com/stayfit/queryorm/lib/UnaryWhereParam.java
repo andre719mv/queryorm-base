@@ -11,4 +11,9 @@ public class UnaryWhereParam implements IWhereParam {
                  "%s %s",
                      PropertyName, Operator);
      }
+
+    @Override
+    public String getPropertyName() {
+        return PropertyName;
+    }
 }

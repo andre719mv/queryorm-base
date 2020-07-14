@@ -11,4 +11,9 @@ public class CollectionWhereParam implements IWhereParam {
      public String toString(){
          return String.format("%s, In: %s.", PropertyName, Values.toString());
      }
+
+     @Override
+     public String getPropertyName() {
+          return PropertyName;
+     }
 }
